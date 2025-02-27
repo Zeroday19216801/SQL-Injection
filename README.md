@@ -1,4 +1,4 @@
-# SQL Injection for Ethical Hacking Learning
+# SQL Injection
 
 SQL Injection (SQLi) is one of the most common vulnerabilities in web applications, and it allows attackers to interfere with the queries an application makes to its database. This guide demonstrates how SQL Injection works and how to prevent it, with a focus on learning and ethical hacking.
 
@@ -74,3 +74,53 @@ The payload is appended to the URL to form the complete request URL. This is don
 Checking the response: The script checks if the response text contains a specific string (e.g., "error") that indicates a successful SQL injection. The lower() method is used to make the check case-insensitive.
 If the string is found, it prints a message indicating that SQL injection was detected and displays the response text.
 If the string is not found, it prints a message indicating that no SQL injection was detected.
+# Mitigation
+To prevent SQL injection attacks, use prepared statements and parameterized queries. Here is an example of how to modify the vulnerable code to use prepared statements:
+```php
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "testdb";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$username = $_GET['username'];
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        echo "id: " . $row["id"]. " - Name: " . $row["username"]. "<br>";
+    }
+} else {
+    echo "0 results";
+}
+$stmt->close();
+$conn->close();
+?>
+```
+## Conclusion
+SQL injection remains a significant security threat to web applications, including those hosted on GitHub. This vulnerability can lead to unauthorized access, data breaches, and other malicious activities. To safeguard your GitHub project, it is crucial to implement robust security measures.
+
+### Key Takeaways:
+- **Understand the Risk:** Recognize that SQL injection can exploit vulnerabilities in your application's database interactions, potentially leading to severe security breaches.
+
+- **Use Prepared Statements:** Always use prepared statements and parameterized queries to ensure that user inputs are treated as data, not executable code.
+
+- **Input Validation:** Validate and sanitize all user inputs to prevent malicious code from being injected into your SQL queries.
+
+- **Regular Security Audits:** Conduct regular security audits and penetration testing to identify and fix vulnerabilities in your codebase.
+
+- **Stay Updated:** Keep your dependencies and frameworks up-to-date with the latest security patches to protect against known vulnerabilities.
+
+By following these best practices, you can significantly reduce the risk of SQL injection in your GitHub project, ensuring a more secure and reliable application.
+
